@@ -479,9 +479,27 @@
   <script src="{% static '/js/now-ui-dashboard.min.js" type="text/javascript' %}"></script><!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
   <script src="{% static 'demo/demo.js' %}"></script>
   <script>
-    $(document).ready(function() {
+    $(document).ready(async function () {
       // Javascript method's body can be found in static/js/demos.js
-      demo.initDashboardPageCharts();
+      try{
+          const start_date = "2023-05-04"
+          const end_date = "2023-09-06"
+					const resp = await fetch("../get_chart/", {
+						method: "POST",
+						body: `start=${start_date}&end=${end_date}`,
+						headers: {
+						"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+						},
+					});
+
+					const result = await resp.json()
+					let res_json = JSON.parse(result)
+          console.log(res_json)
+          demo.initDashboardPageCharts(res_json);
+				} catch(err){
+					console.log(err);
+				}
+      
 
     });
   </script>

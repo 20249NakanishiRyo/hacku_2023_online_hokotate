@@ -8,10 +8,9 @@ import yfinance as yf
 import plotly.graph_objects as go
 from dotenv import load_dotenv
 import os
-from django.views.generic.base import TemplateView
-
-class dashboardView(TemplateView):
-    template_name = 'dashboard.html'
+ 
+class IndexView(TemplateView):
+    template_name = 'index.html'
 
 def get_chart(request):
     load_dotenv()
@@ -22,7 +21,7 @@ def get_chart(request):
     # df = data.get_data_yahoo('JPY=X',start,end)
     df = data.get_data_alphavantage('USDJPY', api_key=api, start=start, end=end)
     df['date'] = df.index
-    # print(df)
+    print(df)
     # 日付一覧を取得
     # d_all = pd.date_range(start=df.index[0],end=df.index[-1])
     
@@ -31,16 +30,16 @@ def get_chart(request):
     
     # # 株価データの日付データに含まれていない日付を抽出
     # d_breaks = [d for d in d_all.strftime("%Y-%m-%d").tolist() if not d in d_obs]
-    # fig = go.Figure(
-    #     data= [go.Candlestick(
-    #                x = df['date'], 
-    #                open=df['open'],
-    #                high=df['high'],
-    #                low=df['low'],
-    #                close=df['close'])
-    #     ]
-    # )
-    # fig.update(layout_xaxis_rangeslider_visible=False)
+    fig = go.Figure(
+        data= [go.Candlestick(
+                   x = df['date'], 
+                   open=df['open'],
+                   high=df['high'],
+                   low=df['low'],
+                   close=df['close'])
+        ]
+    )
+    fig.update(layout_xaxis_rangeslider_visible=False)
     # fig.update_xaxes(
     #     rangebreaks=[dict(values=d_breaks)], # 非営業日を非表示設定
     #     tickformat='%Y/%m/%d' # 日付のフォーマット変更

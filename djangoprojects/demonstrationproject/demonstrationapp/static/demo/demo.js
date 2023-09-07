@@ -104,7 +104,7 @@ demo = {
     });
   },
 
-  initDashboardPageCharts: function() {
+  initDashboardPageCharts: function(array_data) {
 
     chartColor = "#FFFFFF";
 
@@ -312,13 +312,21 @@ demo = {
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
     gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
 
+    var labels_day = []
+    var labels_day_data = []
+
+    for(var i=0; i < array_data.length; i++){
+      labels_day[i] = array_data[i].date
+      labels_day_data[i] = array_data[i].close
+    }
+
     myChart = new Chart(ctx, {
       type: 'line',
       responsive: true,
       data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        labels: labels_day,
         datasets: [{
-          label: "Active Users",
+          label: "Close",
           borderColor: "#f96332",
           pointBorderColor: "#FFF",
           pointBackgroundColor: "#f96332",
@@ -329,7 +337,7 @@ demo = {
           fill: true,
           backgroundColor: gradientFill,
           borderWidth: 2,
-          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630]
+          data: labels_day_data
         }]
       },
       options: gradientChartOptionsConfiguration
