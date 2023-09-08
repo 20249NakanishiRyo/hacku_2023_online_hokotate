@@ -13,6 +13,136 @@ demo = {
     });
   },
 
+  candlechart:async function(array) {
+    await google.charts.load('current', {'packages':['corechart']});
+    var chartData = await new google.visualization.DataTable();
+    //日付ようにString型のカラムを一つ、チャート描画用に数値型のカラムを７つ作成
+    chartData.addColumn('string');
+    for(var x = 0;x < 7; x++){
+        chartData.addColumn('number');
+    }
+    //いちいち書くのが面倒なので、取得した情報の長さを配列に入れる
+    var length = array.length;
+    //描画用のデータを一時的に入れる
+    var insertingData = new Array(length);
+    //平均を出すための割り算の分母
+    var divide = 0;
+    //二次元配列aveに、平均線の日数と平均値を入れる
+    var ave = new Array();
+    //５日平均線用
+    ave[0] = new Array();
+    //25日平均線用
+    ave[1] = new Array();
+    //50日平均線用
+    ave[2] = new Array();
+    //平均線の計算に用いる
+    var temp = 0;
+    //５日移動平均線の算出
+    //基準日より５日前までのデータを足し合わせ、平均値を出す
+    for(var m = 0; m < length - 4; m++){
+        for(var n = 0; n < 5; n++){
+            if(array[m+n].close != ''){
+                temp = temp + parseFloat(array[m+n].close);
+                divide++;
+            }
+        }
+        ave[0][m] = temp / divide;
+        temp = 0;
+        divide = 0;
+    }
+    //2５日移動平均線の算出
+    //上と同様の処理
+    for(var m = 0; m < length - 24; m++){
+        for(var n = 0; n < 25; n++){
+            if(array[m+n].close != ''){
+                temp = temp + parseFloat(array[m+n].close);
+                divide++
+            }
+        }
+        ave[1][m] = temp / divide;
+        temp = 0;
+        divide = 0;
+    }
+    //５0日移動平均線の算出
+    //上と同様の処理
+    for(var m = 0; m < length - 49; m++){
+        for(var n = 0; n < 49; n++){
+            if(array[m+n].close != ''){
+                temp = temp + parseFloat(array[m+n].close);
+                divide++
+            }
+        }
+        ave[2][m] = temp / divide;
+        temp = 0;
+        divide = 0;
+    }
+    //for文をまとめるため、出来高棒グラフの処理もここで行う
+    //出来高を保持する配列
+    var volume = new Array();
+    //チャートの日付を保持する配列
+    var dates = new Array();
+    for(var s = 0; s < length; s++){
+        if(array[s].volume != ''){
+            volume[s] = array[s].volume;
+        }
+        dates[s] = String(array[s].date);
+    }
+    //配列insertingDataの中に、[安値、始値、高値、終値、５日移動平均線、２５日移動平均線、５０日移動平均線]の形で値を入れ込む
+    for(var a = 0; a < length; a++){
+        insertingData[a] = [dates[a],parseFloat(array[a].low),parseFloat(array[a].open),parseFloat(array[a].close),parseFloat(array[a].high),ave[0][a],ave[1][a],ave[2][a]]
+    }
+    console.log(insertingData[0])
+    //チャート描画用の配列の中に、insertingDataの値を入れ込む
+    //最古の50日分のデータまでは移動平均線のデータが揃っていないので、取り除く
+    for (var i = insertingData.length - 50; i > 0; i--){
+        chartData.addRow(insertingData[i]);
+    }
+    console.log(chartData)
+    //チャートの見た目に関する記述、詳細は公式ドキュメントをご覧になってください
+    var options = {
+        chartArea:{left:80,top:10,right:80,bottom:10},
+        colors: ['#003A76'],
+        legend: {
+            position: 'none',
+        },
+        vAxis:{
+            viewWindowMode:'maximized'
+        },
+        hAxis: {
+            format: 'yy/MM/dd',
+            direction: -1,
+        },
+        bar: { 
+            groupWidth: '100%' 
+        },
+        width: 1200,
+        height: 400,
+        lineWidth: 2,
+        curveType: 'function',
+        //チャートのタイプとして、ローソク足を指定
+        seriesType: "candlesticks",  
+        //ローソク足だでなく、線グラフも三種類表示することを記述
+        series: {
+            1:{
+                type: "line",
+                color: 'green',
+            },
+            2:{
+                type: "line",
+                color: 'red',                
+            },
+            3:{
+                type: "line",
+                color: 'orange',                
+            },
+        } 
+    };
+    //描画の処理
+    var chart = new google.visualization.ComboChart(document.getElementById('bigDashboardChart'));
+    chart.draw(chartData, options);
+    console.log(chart)
+  },
+
   initDocChart: function() {
     chartColor = "#FFFFFF";
 
@@ -210,6 +340,8 @@ demo = {
     };
 
     var ctx = document.getElementById('bigDashboardChart').getContext("2d");
+    // ctx.canvas.width = 1000;
+    // ctx.canvas.height = 250;
 
     var gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
     gradientStroke.addColorStop(0, '#80b6f4');
@@ -219,12 +351,30 @@ demo = {
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
     gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
 
+    var labels_day = []
+    var labels_day_data = []
+    var data = []
+
+    for(var i=0; i < array_data.length; i++){
+      var lux_date = new Date(array_data[i].date)
+      labels_day[i] = array_data[i].date
+      labels_day_data[i] = array_data[i].close
+      data[i] = {
+        x: luxon.DateTime.fromMillis(Number(lux_date)).valueOf(),
+        o: array_data[i].open,
+        h: array_data[i].high,
+        l: array_data[i].low,
+        c: array_data[i].close
+      }
+      console.log(data[i].x)
+    }
+
     var myChart = new Chart(ctx, {
-      type: 'line',
+      type: 'candlestick',
       data: {
-        labels: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+        labels: labels_day,
         datasets: [{
-          label: "Data",
+          label: "USD/JPY",
           borderColor: chartColor,
           pointBorderColor: chartColor,
           pointBackgroundColor: "#1e3d60",
@@ -237,7 +387,7 @@ demo = {
           fill: true,
           backgroundColor: gradientFill,
           borderWidth: 2,
-          data: [50, 150, 100, 190, 130, 90, 150, 160, 120, 140, 190, 95]
+          data: data
         }]
       },
       options: {
@@ -270,7 +420,6 @@ demo = {
             ticks: {
               fontColor: "rgba(255,255,255,0.4)",
               fontStyle: "bold",
-              beginAtZero: true,
               maxTicksLimit: 5,
               padding: 10
             },
@@ -311,14 +460,6 @@ demo = {
     gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
     gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
-
-    var labels_day = []
-    var labels_day_data = []
-
-    for(var i=0; i < array_data.length; i++){
-      labels_day[i] = array_data[i].date
-      labels_day_data[i] = array_data[i].close
-    }
 
     myChart = new Chart(ctx, {
       type: 'line',
