@@ -5,7 +5,7 @@ from pandas_datareader import data
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 from dotenv import load_dotenv
 import os
 from django.views.generic.base import TemplateView
@@ -18,11 +18,11 @@ def get_chart(request):
     api = os.getenv("API_KEY")
     start = datetime.strptime(request.POST.get("start"), '%Y-%m-%d')
     end = datetime.strptime(request.POST.get("end"), '%Y-%m-%d')
-    # yf.pdr_override()
-    # df = data.get_data_yahoo('JPY=X',start,end)
+    #yf.pdr_override()
+    #df = data.get_data_yahoo('JPY=X',start,end)
     df = data.get_data_alphavantage('USDJPY', api_key=api, start=start, end=end)
     df['date'] = df.index
-    # print(df)
+    print(df)
     # 日付一覧を取得
     # d_all = pd.date_range(start=df.index[0],end=df.index[-1])
     
