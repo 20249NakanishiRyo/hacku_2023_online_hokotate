@@ -9,6 +9,7 @@ import yfinance as yf
 from dotenv import load_dotenv
 import os
 from django.views.generic.base import TemplateView
+from .models import RateModel
 
 class dashboardView(TemplateView):
     template_name = 'dashboard.html'
@@ -22,7 +23,14 @@ def get_chart(request):
     #df = data.get_data_yahoo('JPY=X',start,end)
     df = data.get_data_alphavantage('USDJPY', api_key=api, start=start, end=end)
     df['date'] = df.index
-    print(df)
+    #print(df)
+    #追加
+    # DBに保存する前に、既存のデータを削除する 
+    RateModel.objects.all().delete()
+    # チャートのデータをDBに保存する
+    for index, row in df.iterrows():
+        RateModel = RateModel(date=row['date'], open=row['open'], high=row['high'], low=row['low'], close=row['close'])
+        RateModel.save()
     # 日付一覧を取得
     # d_all = pd.date_range(start=df.index[0],end=df.index[-1])
     
