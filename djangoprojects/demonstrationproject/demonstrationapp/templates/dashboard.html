@@ -179,8 +179,8 @@
           <div class="col-lg-4">
             <div class="card card-chart">
               <div class="card-header">
-                <h5 class="card-category">Global Sales</h5>
-                <h4 class="card-title">Shipped Products</h4>
+                <h5 class="card-category">USD/JPY</h5>
+                <h4 class="card-title">月足・終値</h4>
                 <div class="dropdown">
                   <button type="button" class="btn btn-round btn-outline-default dropdown-toggle btn-simple btn-icon no-caret" data-toggle="dropdown">
                     <i class="now-ui-icons loader_gear"></i>
@@ -198,18 +198,18 @@
                   <canvas id="lineChartExample"></canvas>
                 </div>
               </div>
-              <div class="card-footer">
+              <!-- <div class="card-footer">
                 <div class="stats">
                   <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="card card-chart">
               <div class="card-header">
-                <h5 class="card-category">2018 Sales</h5>
-                <h4 class="card-title">All products</h4>
+                <h5 class="card-category">USD/JPY</h5>
+                <h4 class="card-title">リアルタイム(未実装)</h4>
                 <div class="dropdown">
                   <button type="button" class="btn btn-round btn-outline-default dropdown-toggle btn-simple btn-icon no-caret" data-toggle="dropdown">
                     <i class="now-ui-icons loader_gear"></i>
@@ -227,33 +227,33 @@
                   <canvas id="lineChartExampleWithNumbersAndGrid"></canvas>
                 </div>
               </div>
-              <div class="card-footer">
+              <!-- <div class="card-footer">
                 <div class="stats">
                   <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
             <div class="card card-chart">
               <div class="card-header">
-                <h5 class="card-category">Email Statistics</h5>
-                <h4 class="card-title">24 Hours Performance</h4>
+                <h5 class="card-category">USD/JPY</h5>
+                <h4 class="card-title">AI予測</h4>
               </div>
               <div class="card-body">
                 <div class="chart-area">
                   <canvas id="barChartSimpleGradientsNumbers"></canvas>
                 </div>
               </div>
-              <div class="card-footer">
+              <!-- <div class="card-footer">
                 <div class="stats">
                   <i class="now-ui-icons ui-2_time-alarm"></i> Last 7 days
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-md-6">
             <div class="card  card-tasks">
               <div class="card-header ">
@@ -434,7 +434,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <footer class="footer">
         <div class=" container-fluid ">
@@ -458,6 +458,7 @@
             </ul>
           </nav>
           <div class="copyright" id="copyright">
+            <a href="https://www.alphavantage.co">Alpha Vantage</a>
             &copy; <script>
               document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
             </script>, Designed by <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
@@ -489,11 +490,10 @@
     $(document).ready(async function () {
       // Javascript method's body can be found in static/js/demos.js
       try{
-          const start_date = "2023-07-04"
-          const end_date = "2023-09-06"
+          const start_date = "2012-01-01"
 					const resp = await fetch("../get_chart/", {
 						method: "POST",
-						body: `start=${start_date}&end=${end_date}`,
+						body: `start=${start_date}`,
 						headers: {
 						"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
 						},
@@ -501,9 +501,8 @@
 
 					const result = await resp.json()
 					let res_json = JSON.parse(result)
-          console.log(res_json)
           demo.initDashboardPageCharts(res_json);
-          // demo.candlechart(res_json)
+          demo.PredictionCharts(res_json);
 				} catch(err){
 					console.log(err);
 				}

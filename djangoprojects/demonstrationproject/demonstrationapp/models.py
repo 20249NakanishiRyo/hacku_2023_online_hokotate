@@ -7,3 +7,10 @@ class RateModel(models.Model):
  high = models.FloatField()
  low = models.FloatField()
  close = models.FloatField()
+
+class FutureRate(models.Model):
+ date = models.DateField()
+ close = models.FloatField()
+ sma01 = models.FloatField()
+ sma02 = models.FloatField()
+ sma03 = models.FloatField()

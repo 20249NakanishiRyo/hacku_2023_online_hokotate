@@ -356,23 +356,24 @@ demo = {
     var data = []
 
     for(var i=0; i < array_data.length; i++){
-      var lux_date = new Date(array_data[i].date)
-      labels_day[i] = array_data[i].date
-      labels_day_data[i] = array_data[i].close
-      data[i] = {
-        x: luxon.DateTime.fromMillis(Number(lux_date)).valueOf(),
-        o: array_data[i].open,
-        h: array_data[i].high,
-        l: array_data[i].low,
-        c: array_data[i].close
+      if(i === 0){
+        i = array_data.length - 40;
       }
-      console.log(data[i].x)
+      else{
+        var lux_date = new Date(array_data[i].date)
+        data[i - (array_data.length - 39)] = {
+          x: luxon.DateTime.fromMillis(Number(lux_date)).valueOf(),
+          o: array_data[i].open,
+          h: array_data[i].high,
+          l: array_data[i].low,
+          c: array_data[i].close
+        }
+      }
     }
 
     var myChart = new Chart(ctx, {
       type: 'candlestick',
       data: {
-        labels: labels_day,
         datasets: [{
           label: "USD/JPY",
           borderColor: chartColor,
@@ -461,6 +462,27 @@ demo = {
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
     gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
 
+    var labels_day = []
+    var labels_day_data = []
+    var data = []
+    var j = 0;
+    var pre_month = 100;
+
+    for(var i=0; i < array_data.length; i++){
+      if(i === 0){
+        i = array_data.length - 300;
+      }
+      else{
+        var lux_date = new Date(array_data[i].date)
+        if(lux_date.getMonth() !== pre_month){
+          labels_day[j] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
+          data[j] = array_data[i].close;
+          j += 1;
+          pre_month = lux_date.getMonth();
+        }
+      }
+    }
+
     myChart = new Chart(ctx, {
       type: 'line',
       responsive: true,
@@ -478,7 +500,7 @@ demo = {
           fill: true,
           backgroundColor: gradientFill,
           borderWidth: 2,
-          data: labels_day_data
+          data: data
         }]
       },
       options: gradientChartOptionsConfiguration
@@ -518,80 +540,199 @@ demo = {
       options: gradientChartOptionsConfigurationWithNumbersAndGrid
     });
 
-    var e = document.getElementById("barChartSimpleGradientsNumbers").getContext("2d");
+    // var e = document.getElementById("barChartSimpleGradientsNumbers").getContext("2d");
+
+    // gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    // gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    // gradientFill.addColorStop(1, hexToRGB('#2CA8FF', 0.6));
+
+    // var a = {
+    //   type: "bar",
+    //   data: {
+    //     labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    //     datasets: [{
+    //       label: "Active Countries",
+    //       backgroundColor: gradientFill,
+    //       borderColor: "#2CA8FF",
+    //       pointBorderColor: "#FFF",
+    //       pointBackgroundColor: "#2CA8FF",
+    //       pointBorderWidth: 2,
+    //       pointHoverRadius: 4,
+    //       pointHoverBorderWidth: 1,
+    //       pointRadius: 4,
+    //       fill: true,
+    //       borderWidth: 1,
+    //       data: [80, 99, 86, 96, 123, 85, 100, 75, 88, 90, 123, 155]
+    //     }]
+    //   },
+    //   options: {
+    //     maintainAspectRatio: false,
+    //     legend: {
+    //       display: false
+    //     },
+    //     tooltips: {
+    //       bodySpacing: 4,
+    //       mode: "nearest",
+    //       intersect: 0,
+    //       position: "nearest",
+    //       xPadding: 10,
+    //       yPadding: 10,
+    //       caretPadding: 10
+    //     },
+    //     responsive: 1,
+    //     scales: {
+    //       yAxes: [{
+    //         gridLines: 0,
+    //         gridLines: {
+    //           zeroLineColor: "transparent",
+    //           drawBorder: false
+    //         }
+    //       }],
+    //       xAxes: [{
+    //         display: 0,
+    //         gridLines: 0,
+    //         ticks: {
+    //           display: false
+    //         },
+    //         gridLines: {
+    //           zeroLineColor: "transparent",
+    //           drawTicks: false,
+    //           display: false,
+    //           drawBorder: false
+    //         }
+    //       }]
+    //     },
+    //     layout: {
+    //       padding: {
+    //         left: 0,
+    //         right: 0,
+    //         top: 15,
+    //         bottom: 15
+    //       }
+    //     }
+    //   }
+    // };
+
+    // var viewsChart = new Chart(e, a);
+  },
+
+  PredictionCharts: async function(array_data) {
+    const start_date = "2012-01-01"
+    const resp = await fetch("../predict_chart/", {
+      method: "POST",
+      body: `start=${start_date}`,
+      headers: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+      },
+    });
+    const result = await resp.json()
+    let res_json = JSON.parse(result)
+    console.log(res_json)
+
+    gradientChartOptionsConfiguration = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10
+      },
+      responsive: 1,
+      scales: {
+        yAxes: [{
+          display: 0,
+          gridLines: 0,
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawTicks: false,
+            display: false,
+            drawBorder: false
+          }
+        }],
+        xAxes: [{
+          display: 0,
+          gridLines: 0,
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawTicks: false,
+            display: false,
+            drawBorder: false
+          }
+        }]
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15
+        }
+      }
+    };
+
+    ctx = document.getElementById('barChartSimpleGradientsNumbers').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
 
     gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    gradientFill.addColorStop(1, hexToRGB('#2CA8FF', 0.6));
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
 
-    var a = {
-      type: "bar",
+    var labels_day = []
+    var data = []
+
+    for(var i=0; i < array_data.length; i++){
+      if(i === 0){
+        i = array_data.length - 7;
+      }
+      else{
+        var lux_date = new Date(array_data[i].date)
+        labels_day[i - (array_data.length - 6)] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
+        data[i - (array_data.length - 6)] = array_data[i].close;
+      }
+    }
+    var lux_date = new Date(res_json[0].date)
+    console.log((lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate()))
+    labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
+    data[data.length] = res_json[0].close
+    console.log(labels_day)
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      responsive: true,
       data: {
-        labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        labels: labels_day,
         datasets: [{
-          label: "Active Countries",
-          backgroundColor: gradientFill,
-          borderColor: "#2CA8FF",
+          label: "Close",
+          borderColor: "#f96332",
           pointBorderColor: "#FFF",
-          pointBackgroundColor: "#2CA8FF",
+          pointBackgroundColor: "#f96332",
           pointBorderWidth: 2,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 1,
           pointRadius: 4,
           fill: true,
-          borderWidth: 1,
-          data: [80, 99, 86, 96, 123, 85, 100, 75, 88, 90, 123, 155]
+          backgroundColor: gradientFill,
+          borderWidth: 2,
+          data: data
         }]
       },
-      options: {
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          bodySpacing: 4,
-          mode: "nearest",
-          intersect: 0,
-          position: "nearest",
-          xPadding: 10,
-          yPadding: 10,
-          caretPadding: 10
-        },
-        responsive: 1,
-        scales: {
-          yAxes: [{
-            gridLines: 0,
-            gridLines: {
-              zeroLineColor: "transparent",
-              drawBorder: false
-            }
-          }],
-          xAxes: [{
-            display: 0,
-            gridLines: 0,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              zeroLineColor: "transparent",
-              drawTicks: false,
-              display: false,
-              drawBorder: false
-            }
-          }]
-        },
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 15,
-            bottom: 15
-          }
-        }
-      }
-    };
-
-    var viewsChart = new Chart(e, a);
+      options: gradientChartOptionsConfiguration
+    });
   },
 
   initGoogleMaps: function() {
