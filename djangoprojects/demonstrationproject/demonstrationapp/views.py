@@ -47,7 +47,7 @@ def get_chart(request):
             model = RateModel(date=row['date'], open=row['open'], high=row['high'], low=row['low'], close=row['close'])
             model.save()
     with connection.cursor() as cursor:
-        cursor.execute("SELECT date, open, high, low, close FROM demonstrationapp_ratemodel;")
+        cursor.execute("SELECT date, open, high, low, close FROM demonstrationapp_ratemodel ORDER BY date ASC;")
         result = cursor.fetchall()
     df = pd.DataFrame(result, columns=columns)
     return JsonResponse(data=df.to_json(orient='records'), safe=False)
@@ -77,7 +77,6 @@ def predict_chart(request):
         data_technical['sma03']=price.rolling(window=span03).mean()
         data_technical=data_technical.dropna(how='any')
         data_technical=data_technical.drop(['open', 'volume', 'high','low',], axis=1)
-        print(data_technical)
         scaler= MinMaxScaler(feature_range=(0,1))
         data_scale = pd.DataFrame(scaler.fit_transform(data_technical),index=data_technical.index,columns=data_technical.columns)
         data_scale_train = data_scale["2012":"2022"]
@@ -115,16 +114,15 @@ def predict_chart(request):
         y_future_list = []
 
         y_future = model.predict(X_future) 
-        print(y_future)
         y_future_list.append(y_future[0]) 
         X_future = [X_future[0][1:] + y_future.tolist()]
 
         df_week_future = pd.DataFrame(scaler.inverse_transform(y_future_list), index=pd.date_range(next_day, periods=1, freq='D'),columns=data_technical.columns) 
-        print(df_week_future)
         df_week_future['date'] = df_week_future.index
         FutureRate.objects.all().delete()
-        future_data = FutureRate(date=df_week_future[0]['date'], close=df_week_future[0]['close'], sma01=df_week_future[0]['sma01'], sma02=df_week_future[0]['sma02'], sma03=df_week_future[0]['sma03'])
-        model.save()
+        for index, row in df_week_future.iterrows():
+            future_data = FutureRate(date=row['date'], close=row['close'], sma01=row['sma01'], sma02=row['sma02'], sma03=row['sma03'])
+            future_data.save()
     with connection.cursor() as cursor:
         cursor.execute("SELECT date, close, sma01, sma02, sma03 FROM demonstrationapp_futurerate;")
         result = cursor.fetchall()
