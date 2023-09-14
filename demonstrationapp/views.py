@@ -160,7 +160,6 @@ def create_input_data(data, look_back):
     return y, X
 
 def my_customized_server_error(request, template_name='500.html'):
-    import sys
-    from django.views import debug
-    error_html = debug.technical_500_response(request, *sys.exc_info()).content
-    return HttpResponseServerError(error_html)
+    import traceback
+    print(traceback.format_exc())
+    return HttpResponseServerError('<h1>Server Error (500)だよー</h1>')
