@@ -185,11 +185,9 @@ if not DEBUG:
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # Static files (CSS, JavaScript, Images)
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATIC_URL = '/static/'
 
-    # Extra places for collectstatic to find static files.
     STATICFILES_DIRS = (
         os.path.join(BASE_DIR, 'static'),
     )
@@ -198,8 +196,11 @@ if not DEBUG:
         'whitenoise.middleware.WhiteNoiseMiddleware',
     ]
 
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
     DATABASES = {
         'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     }
+
 
     django_heroku.settings(locals())
