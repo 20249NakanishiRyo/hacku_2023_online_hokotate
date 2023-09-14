@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-_2eik-p3kvht3hv^jqp-#m4vdmbf^sr7hyg=6-6a^pp2f04spd"
+#SECRET_KEY = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -201,3 +201,5 @@ if not DEBUG:
     DATABASES = {
         'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     }
+
+     django_heroku.settings(locals())
