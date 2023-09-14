@@ -159,7 +159,6 @@ def create_input_data(data, look_back):
 
     return y, X
 
-@requires_csrf_token
 def my_customized_server_error(request, template_name='500.html'):
     import sys
     from django.views import debug
