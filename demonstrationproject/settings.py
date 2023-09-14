@@ -180,3 +180,20 @@ if not DEBUG:
 
     # HerokuのConfigを読み込み
     django_heroku.settings(locals())
+
+    DB_NAME = os.environ["DB_NAME"]
+    DB_USER = os.environ["DB_USER"]
+    PASSWORD = os.environ["PASSWORD"]
+    HOST = os.environ["HOST"]
+    PORT = os.environ["PORT"]
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': PASSWORD,
+            'HOST': HOST,
+            'PORT': PORT,
+        }
+    }
