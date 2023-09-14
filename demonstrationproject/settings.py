@@ -183,4 +183,4 @@ if not DEBUG:
 
     django_heroku.settings(locals())
 
-    #DEBUG = True
+    DEBUG = True
