@@ -14,13 +14,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-PASSWORD = os.getenv("PASSWORD")
-HOST = os.getenv("HOST")
-PORT = os.getenv("PORT")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -90,17 +83,6 @@ WSGI_APPLICATION = "demonstrationproject.wsgi.application"
 #     }
 # }
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': DB_NAME,
-         'USER': DB_USER,
-         'PASSWORD': PASSWORD,
-         'HOST': HOST,
-         'PORT': PORT,
-     }
- }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -126,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ja"
 
-TIME_ZONE = "Asia/tokyo"
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -145,3 +127,53 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'demonstrationapp/static')]
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+DEBUG = False
+
+try:
+    # 存在する場合、ローカルの設定読み込み
+    from .settings_local import *
+    load_dotenv()
+    DB_NAME = os.getenv("DB_NAME")
+    DB_USER = os.getenv("DB_USER")
+    PASSWORD = os.getenv("PASSWORD")
+    HOST = os.getenv("HOST")
+    PORT = os.getenv("PORT")
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': PASSWORD,
+            'HOST': HOST,
+            'PORT': PORT,
+        }
+    }
+except ImportError:
+    pass
+
+if not DEBUG:
+    # Heroku settings
+
+    # staticの設定
+    import os
+    import django_heroku
+
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Static files (CSS, JavaScript, Images)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = '/static/'
+
+    # Extra places for collectstatic to find static files.
+    STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static'),
+    )
+
+    MIDDLEWARE += [
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+    ]
+
+    # HerokuのConfigを読み込み
+    django_heroku.settings(locals())
