@@ -162,6 +162,7 @@ if not DEBUG:
     # staticの設定
     import os
     import django_heroku
+    import dj_database_url
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -178,22 +179,6 @@ if not DEBUG:
         'whitenoise.middleware.WhiteNoiseMiddleware',
     ]
 
-    # HerokuのConfigを読み込み
-    django_heroku.settings(locals())
-
-    DB_NAME = os.environ["DB_NAME"]
-    DB_USER = os.environ["DB_USER"]
-    PASSWORD = os.environ["PASSWORD"]
-    HOST = os.environ["HOST"]
-    PORT = os.environ["PORT"]
-
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DB_NAME,
-            'USER': DB_USER,
-            'PASSWORD': PASSWORD,
-            'HOST': HOST,
-            'PORT': PORT,
-        }
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     }
