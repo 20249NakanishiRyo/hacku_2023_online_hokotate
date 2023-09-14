@@ -14,12 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-PASSWORD = os.getenv("PASSWORD")
-HOST = os.getenv("HOST")
-PORT = os.getenv("PORT")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,17 +85,6 @@ WSGI_APPLICATION = "demonstrationproject.wsgi.application"
 #     }
 # }
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': DB_NAME,
-         'USER': DB_USER,
-         'PASSWORD': PASSWORD,
-         'HOST': HOST,
-         'PORT': PORT,
-     }
- }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -151,6 +135,24 @@ DEBUG = False
 try:
     # 存在する場合、ローカルの設定読み込み
     from .settings_local import *
+
+    load_dotenv()
+    DB_NAME = os.getenv("DB_NAME")
+    DB_USER = os.getenv("DB_USER")
+    PASSWORD = os.getenv("PASSWORD")
+    HOST = os.getenv("HOST")
+    PORT = os.getenv("PORT")
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': PASSWORD,
+            'HOST': HOST,
+            'PORT': PORT,
+        }
+    }
 except ImportError:
     pass
 

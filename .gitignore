@@ -1,2 +1,4 @@
 .env
 settings_local.py
+__pycache__/
+demonstrationproject/__pycache__/

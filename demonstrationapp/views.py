@@ -106,10 +106,6 @@ def predict_chart(request):
         model.evaluate(X_train,y_train,batch_size=1)
         model.evaluate(X_test,y_test,batch_size=1)
 
-        model.save('chart_model.keras')
-
-        # model = tf.keras.models.load_model("chart_model.h5")
-
         X_future = [data_scale_test[-look_back:].values.tolist()] 
         y_future_list = []
 
