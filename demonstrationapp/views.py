@@ -96,7 +96,7 @@ def predict_chart(request):
 
         model = Sequential()
         x = model.add(LSTM(12, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
-        model.add(LSTM(8), return_sequences=True)
+        model.add(LSTM(8, return_sequences=True))
         model.add(Flatten())
         model.add(Dense(len(data_scale.columns))) #出力層はデータ数に合わせる
 
