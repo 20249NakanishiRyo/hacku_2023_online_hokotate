@@ -5987,4 +5987,24 @@ Created using IcoMoon - icomoon.io
   }
 }
 
+.blog_intro{
+  font-size: 28px;
+  color:gray;
+}
+
+.title_area{
+  font-size: 48px;
+  color: black;
+}
+
+.intro_area{
+  font-size: 30px;
+  color: black;
+}
+
+.body_area{
+  font-size: 20px;
+  color: black;
+}
+
 /*# sourceMappingURL=dashboard-free.css.map */

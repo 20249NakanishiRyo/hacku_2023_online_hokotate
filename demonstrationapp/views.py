@@ -25,6 +25,13 @@ class dashboardView(TemplateView):
 class userView(TemplateView):
     template_name = 'user.html'
 
+def show_blog(request, number):
+    template_name = 'blog.html'
+    ctx = {
+    "number": number,
+    }
+    return render(request, template_name, ctx)
+
 def get_chart(request):
     columns = ['date', 'open', 'high', 'low', 'close']
     end = datetime.today()
@@ -176,9 +183,19 @@ def create_input_data(data, look_back):
     return y, X
 
 
-def dashblog(request):
+def get_blog(request):
+    columns = ['id', 'title', 'slag', 'intro', 'body', 'posted_date']
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM demonstrationapp_post;")
         posts = cursor.fetchall()
-    print(posts)
-    return render(request,"dashboad.html",{"posts":posts})
+    df = pd.DataFrame(posts, columns=columns)
+    return JsonResponse(data=df.to_json(orient='records'), safe=False)
+
+def get_blog_id(request):
+    id = request.POST.get("id")
+    columns = ['title','intro', 'body']
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT title, intro, body FROM demonstrationapp_post WHERE id = %s;", [id])
+        result = cursor.fetchall()
+    df = pd.DataFrame(result, columns=columns)
+    return JsonResponse(data=df.to_json(orient='records'), safe=False)

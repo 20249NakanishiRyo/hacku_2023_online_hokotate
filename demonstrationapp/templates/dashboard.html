@@ -257,22 +257,19 @@
           <div class="col-md-12">
             <div class="card  card-tasks">
               <div class="card-header ">
-                <h5 class="card-category">Backend development</h5>
-                <h4 class="card-title">Tasks</h4>
+                <h4 class="card-title">ガイド</h4>
               </div>
               <div class="card-body ">
-                 
-                <div class="table-full-width table-responsive">
+                <div class="blogs_area">
+                </div>
+                <!-- <div class="table-full-width table-responsive">
                   <table class="table">
                     <tbody>
-                      {% for post in posts %}
                        <div class="post bolock">
                        <h2 class="subtitle">
-                         {{post.title}}
                        </h2>
                        </div>
-                      {% endfor %}
-                      <!-- <tr>
+                       <tr>
                         <td>
                           <div class="form-check">
                             <label class="form-check-label">
@@ -329,17 +326,17 @@
                             <i class="now-ui-icons ui-1_simple-remove"></i>
                           </button>
                         </td>
-                      </tr> -->
+                      </tr> 
                     </tbody>
                   </table>
-                </div>
+                </div> -->
               </div>
-              <div class="card-footer ">
+              <!-- <div class="card-footer ">
                 <hr>
                 <div class="stats">
                   <i class="now-ui-icons loader_refresh spin"></i> Updated 3 minutes ago
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <!-- <div class="col-md-6">
@@ -507,9 +504,20 @@
 						},
 					});
 
+          const blogs = await fetch("../get_blog/", {
+						method: "POST",
+						body: `start=${start_date}`,
+						headers: {
+						"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+						},
+					});
+
 					const result = await resp.json()
 					let res_json = JSON.parse(result)
+          const blog_result = await blogs.json()
+          let blog_json = JSON.parse(blog_result)
           demo.initDashboardPageCharts(res_json);
+          demo.CreateBlogs(blog_json)
           demo.PredictionCharts(res_json);
 				} catch(err){
 					console.log(err);

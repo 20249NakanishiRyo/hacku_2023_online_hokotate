@@ -1,3 +1,18 @@
+function create_blog (array) {
+  const blogDiv = document.querySelector('.blogs_area');
+  const titleElement = document.createElement('h1');
+  titleElement.textContent = array.title;
+  const introElement = document.createElement('div');
+  introElement.textContent = array.intro;
+  introElement.classList.add('blog_intro')
+  const linkElement = document.createElement('a');
+  linkElement.href = "./blog/" + array.id;
+  linkElement.appendChild(titleElement);
+  linkElement.appendChild(introElement)
+  blogDiv.appendChild(linkElement);
+  blogDiv.appendChild(document.createElement('hr'))
+}
+
 demo = {
   initPickColor: function() {
     $('.pick-class-label').click(function() {
@@ -616,6 +631,14 @@ demo = {
     // var viewsChart = new Chart(e, a);
   },
 
+  CreateBlogs: async function(array_data) {
+    console.log(array_data)
+    for (var i=0; i < array_data.length; i++){
+      console.log(array_data[i])
+      create_blog(array_data[i])
+    }
+  },
+
   PredictionCharts: async function(array_data) {
     const start_date = "2012-01-01"
     const resp = await fetch("../predict_chart/", {
@@ -627,7 +650,7 @@ demo = {
     });
     const result = await resp.json()
     let res_json = JSON.parse(result)
-    console.log(res_json)
+    // console.log(res_json)
 
     gradientChartOptionsConfiguration = {
       maintainAspectRatio: false,
@@ -706,10 +729,10 @@ demo = {
       }
     }
     var lux_date = new Date(res_json[0].date)
-    console.log((lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate()))
+    // console.log((lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate()))
     labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
     data[data.length] = res_json[0].close
-    console.log(labels_day)
+    // console.log(labels_day)
 
     myChart = new Chart(ctx, {
       type: 'line',
