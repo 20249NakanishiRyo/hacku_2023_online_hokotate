@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'demonstrationapp'
 
-handler500 = views.my_customized_server_error
+#handler500 = views.my_customized_server_error
 
 urlpatterns = [
     path('', views.dashboardView.as_view(), name='dashboard'),

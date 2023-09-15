@@ -14,3 +14,10 @@ class FutureRate(models.Model):
  sma01 = models.FloatField()
  sma02 = models.FloatField()
  sma03 = models.FloatField()
+
+class Post(models.Model):
+ title = models.CharField(max_length=25)
+ slug = models.SlugField()
+ intro = models.TextField()
+ body = models.TextField()
+ posted_date = models.DateField(auto_now_add=True)
