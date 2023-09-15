@@ -11,6 +11,8 @@ import os
 from django.views.generic.base import TemplateView
 from .models import RateModel
 from .models import FutureRate
+from .models import Post
+from django.shortcuts import render
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Activation
@@ -173,7 +175,10 @@ def create_input_data(data, look_back):
 
     return y, X
 
-def my_customized_server_error(request, template_name='500.html'):
-    import traceback
-    print(traceback.format_exc())
-    return HttpResponseServerError('<h1>Server Error (500)だよー</h1>')
+
+def dashblog(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM demonstrationapp_post;")
+        posts = cursor.fetchall()
+    print(posts)
+    return render(request,"dashboad.html",{"posts":posts})

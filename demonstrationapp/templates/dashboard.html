@@ -253,18 +253,26 @@
             </div>
           </div>
         </div>
-        <!-- <div class="row">
-          <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-12">
             <div class="card  card-tasks">
               <div class="card-header ">
                 <h5 class="card-category">Backend development</h5>
                 <h4 class="card-title">Tasks</h4>
               </div>
               <div class="card-body ">
+                 
                 <div class="table-full-width table-responsive">
                   <table class="table">
                     <tbody>
-                      <tr>
+                      {% for post in posts %}
+                       <div class="post bolock">
+                       <h2 class="subtitle">
+                         {{post.title}}
+                       </h2>
+                       </div>
+                      {% endfor %}
+                      <!-- <tr>
                         <td>
                           <div class="form-check">
                             <label class="form-check-label">
@@ -321,7 +329,7 @@
                             <i class="now-ui-icons ui-1_simple-remove"></i>
                           </button>
                         </td>
-                      </tr>
+                      </tr> -->
                     </tbody>
                   </table>
                 </div>
@@ -334,7 +342,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <div class="card">
               <div class="card-header">
                 <h5 class="card-category">All Persons List</h5>
@@ -433,8 +441,8 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div> -->
+          </div> -->
+        </div>
       </div>
       <footer class="footer">
         <div class=" container-fluid ">
