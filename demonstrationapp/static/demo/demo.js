@@ -1,4 +1,4 @@
-function create_blog (array) {
+function create_blog (array, option) {
   const blogDiv = document.querySelector('.blogs_area');
   const titleElement = document.createElement('h1');
   titleElement.textContent = array.title;
@@ -6,7 +6,12 @@ function create_blog (array) {
   introElement.textContent = array.intro;
   introElement.classList.add('blog_intro')
   const linkElement = document.createElement('a');
-  linkElement.href = "./blog/" + array.id;
+  if (option === true){
+    linkElement.href = "../blog/" + array.id;
+  }
+  else{
+    linkElement.href = "./blog/" + array.id;
+  }
   linkElement.appendChild(titleElement);
   linkElement.appendChild(introElement)
   blogDiv.appendChild(linkElement);
@@ -631,24 +636,31 @@ demo = {
     // var viewsChart = new Chart(e, a);
   },
 
-  CreateBlogs: async function(array_data) {
+  CreateBlogs: async function(array_data, option) {
     for (var i=0; i < array_data.length; i++){
-      create_blog(array_data[i])
+      create_blog(array_data[i], option)
     }
   },
 
-  PredictionCharts: async function(array_data) {
+  PredictionCharts: async function(array_data, ticker) {
+    const targetDiv = document.getElementById("loading")
+    var iconElement = document.createElement('i')
+    iconElement.classList.add('now-ui-icons', 'loader_refresh', 'spin')
+    var textElement = document.createElement("div")
+    textElement.textContent = "Now Loading..."
+    targetDiv.appendChild(iconElement)
+    targetDiv.appendChild(textElement)
     const start_date = "2012-01-01"
     const resp = await fetch("../predict_chart/", {
       method: "POST",
-      body: `start=${start_date}`,
+      body: `start=${start_date}&ticker=${ticker}`,
       headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
       },
     });
     const result = await resp.json()
     let res_json = JSON.parse(result)
-    // console.log(res_json)
+    targetDiv.remove()
 
     gradientChartOptionsConfiguration = {
       maintainAspectRatio: false,

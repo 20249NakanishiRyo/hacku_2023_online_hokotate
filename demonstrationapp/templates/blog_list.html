@@ -54,8 +54,8 @@
       </div>  -->
       <div class="sidebar-wrapper" id="sidebar-wrapper">
         <ul class="nav">
-          <li class="active ">
-            <a href="./">
+          <li>
+            <a href="../">
               <i class="now-ui-icons design_app"></i>
               <p>Home</p>
             </a>
@@ -80,12 +80,12 @@
             </a>
           </li-->
           <li>
-            <a href="./user/">
+            <a href="../user/">
               <i class="now-ui-icons users_single-02"></i>
               <p>User Profile</p>
             </a>
           </li>
-          <li>
+          <li class="active ">
             <a href="./blog_list/">
               <i class="now-ui-icons design_bullet-list-67"></i>
               <p>Blog List</p>
@@ -118,7 +118,7 @@
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Dashboard</a>
+            <a class="navbar-brand" href="#pablo">Blog List</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -175,7 +175,7 @@
         <canvas id="bigDashboardChart"></canvas>
       </div>
       <div class="content">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-lg-6">
             <div class="card card-chart">
               <div class="card-header">
@@ -198,14 +198,14 @@
                   <canvas id="lineChartExample"></canvas>
                 </div>
               </div>
-              <!-- <div class="card-footer">
+              <div class="card-footer">
                 <div class="stats">
                   <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
-          <!-- <div class="col-lg-4 col-md-6">
+          <div class="col-lg-4 col-md-6">
             <div class="card card-chart">
               <div class="card-header">
                 <h5 class="card-category">USD/JPY</h5>
@@ -233,7 +233,7 @@
                 </div>
               </div> 
             </div>
-          </div> -->
+          </div>
           <div class="col-lg-6 ">
             <div class="card card-chart">
               <div class="card-header">
@@ -246,14 +246,14 @@
                   <canvas id="barChartSimpleGradientsNumbers"></canvas>
                 </div>
               </div>
-              <!-- <div class="card-footer">
+              <div class="card-footer">
                 <div class="stats">
                   <i class="now-ui-icons ui-2_time-alarm"></i> Last 7 days
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="row">
           <div class="col-md-12">
             <div class="card  card-tasks">
@@ -494,39 +494,24 @@
   <script src="{% static 'demo/demo.js' %}"></script>
   <script>
     $(document).ready(async function () {
-      // Javascript method's body can be found in static/js/demos.js
-      try{
-          const start_date = "2012-01-01"
-          if (localStorage.getItem("ticker") === null){
-            localStorage.setItem("ticker", "USDJPY=X")
-          }
-          const ticker = localStorage.getItem("ticker")
-					const resp = await fetch("../get_chart/", {
-						method: "POST",
-						body: `start=${start_date}&ticker=${ticker}`,
-						headers: {
-						"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-						},
-					});
+        // Javascript method's body can be found in static/js/demos.js
+        try{
+            const start_date = "2012-01-01"
 
-          const blogs = await fetch("../get_blog/", {
-						method: "POST",
-						body: `start=${start_date}`,
-						headers: {
-						"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-						},
-					});
+            const blogs = await fetch("../get_blog/", {
+                method: "POST",
+                body: `start=${start_date}`,
+                headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+                },
+            });
 
-					const result = await resp.json()
-					let res_json = JSON.parse(result)
-          const blog_result = await blogs.json()
-          let blog_json = JSON.parse(blog_result)
-          demo.initDashboardPageCharts(res_json);
-          demo.CreateBlogs(blog_json, false)
-          demo.PredictionCharts(res_json, ticker);
-				} catch(err){
-					console.log(err);
-				}
+            const blog_result = await blogs.json()
+            let blog_json = JSON.parse(blog_result)
+            demo.CreateBlogs(blog_json, true)
+        } catch(err){
+            console.log(err);
+        }
       
 
     });

@@ -180,10 +180,10 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Edit Profile</h5>
+                <h5 class="title">User Login</h5>
               </div>
               <div class="card-body">
-                <form id="user_form">
+                <form id="login_form">
                   <div class="row">
                     <!-- <div class="col-md-5 pr-1">
                       <div class="form-group">
@@ -191,10 +191,16 @@
                         <input type="text" class="form-control" disabled="" placeholder="Company" value="Creative Code Inc.">
                       </div>
                     </div> -->
-                    <div class="col-md-12 px-1">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <label>Username</label>
                         <input type="text" id="username" class="form-control" placeholder="Username" required>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Password" required>
                       </div>
                     </div>
                     <!-- <div class="col-md-4 pl-1">
@@ -246,21 +252,27 @@
                       </div>
                     </div>
                   </div> -->
-                  <div class="row">
+                  <!-- <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
                         <label>為替選択</label><br>
-                        <select id="ticker">
+                        <select>
                           <option>USD/JPY</option>
-                          <option>EUR/USD</option>
+                          <option>USD/JPY</option>
                         </select>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="form-group">
-                    <input type="submit" value="情報更新" id="user_submit">
+                    <input type="submit" value="Login" id="login_submit">
                   </div>
                 </form>
+                <hr>
+                <div class="form-group">
+                  <a href="../newuser/">
+                    <input type="button" value="新規登録" id="newuser_button">
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -346,14 +358,10 @@
   <script src="{% static 'js/now-ui-dashboard.min.js' %}" type="text/javascript"></script><!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
   <script src="{% static 'demo/demo.js' %}"></script>
   <script>
-    $(document).ready(async function () {
-      const username = localStorage.getItem("username")
-      const password = localStorage.getItem("password")
-      const ticker = localStorage.getItem("ticker")
-      if(username === null || password === null){
-        window.location.href = "../login/"
-        return
-      }
+     document.getElementById('login_form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value
+      const password = document.getElementById("password").value
       const resp = await fetch("../auth_login/", {
         method: "POST",
         body: `username=${username}&password=${password}`,
@@ -363,61 +371,27 @@
       });
       const result = await resp.json()
       const resp_json = JSON.parse(result)
-      var selectElement = document.getElementById("ticker")
       if(resp_json[0].A === true){
-        document.getElementById("username").value = username
-        switch (localStorage.getItem("ticker")){
-          case "USDJPY=X":
-            selectElement.selectedIndex = 0
-            break;
-          case "EURUSD=X":
-            selectElement.selectedIndex = 1
-            break;
-          default:
-            selectElement.selectedIndex = 0
-            break;
-        }
+        alert("ログインに成功しました！")
+        localStorage.setItem("username", username)
+        localStorage.setItem("password", password)
+        const user_resp = await fetch("../get_userinfo/", {
+          method: "POST",
+          body: `username=${username}&password=${password}`,
+          headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+          },
+        });
+        const user_result = await user_resp.json()
+        const user_json = JSON.parse(user_result)
+        localStorage.setItem("ticker", user_json[0].ticker)
+        window.location.href = "../user/";
       }
       else{
-        window.location.href = "../login/"
+        alert("ログインに失敗しました。")
         return
       }
-    });
-
-    document.getElementById('user_form').addEventListener('submit', async function(event) {
-      event.preventDefault()
-      const username = document.getElementById("username").value
-      const password = localStorage.getItem("password")
-      var selectElement = document.getElementById("ticker")
-      var ticker = "USDJPY=X"
-      switch (selectElement.selectedIndex){
-        case 0:
-          ticker = "USDJPY=X"
-          break
-        case 1:
-          ticker = "EURUSD=X"
-          break
-        default:
-          ticker = "USDJPY=X"
-      }
-      const resp = await fetch("../update_user/", {
-        method: "POST",
-        body: `username=${username}&password=${password}&ticker=${ticker}`,
-        headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-        },
-      });
-      const result = await resp.json()
-      const resp_json = JSON.parse(result)
-      if(resp_json[0].A === true){
-        alert("設定変更完了しました！")
-        localStorage.setItem("username", username)
-        localStorage.setItem("ticker", ticker)
-      }
-      else{
-        alert("設定変更に失敗しました")
-      }
-    });
+     });
   </script>
 </body>
 

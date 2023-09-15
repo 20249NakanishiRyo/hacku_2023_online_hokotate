@@ -21,3 +21,8 @@ class Post(models.Model):
  intro = models.TextField()
  body = models.TextField()
  posted_date = models.DateField(auto_now_add=True)
+
+class User(models.Model):
+ username = models.CharField(max_length=50)
+ password = models.CharField(max_length=50)
+ ticker = models.CharField(max_length=20)
