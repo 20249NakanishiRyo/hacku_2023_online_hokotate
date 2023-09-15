@@ -253,6 +253,9 @@
                         <select id="ticker">
                           <option>USD/JPY</option>
                           <option>EUR/USD</option>
+                          <option>EUR/JPY</option>
+                          <option>GBP/USD</option>
+                          <option>AUD/USD</option>
                         </select>
                       </div>
                     </div>
@@ -373,6 +376,15 @@
           case "EURUSD=X":
             selectElement.selectedIndex = 1
             break;
+          case "EURJPY=X":
+            selectElement.selectedIndex = 2
+            break;
+          case "GBPUSD=X":
+            selectElement.selectedIndex = 3
+            break;
+          case "AUDUSD=X":
+            selectElement.selectedIndex = 4
+            break;
           default:
             selectElement.selectedIndex = 0
             break;
@@ -396,6 +408,15 @@
           break
         case 1:
           ticker = "EURUSD=X"
+          break
+        case 2:
+          ticker = "EURJPY=X"
+          break
+        case 3:
+          ticker = "GBPUSD=X"
+          break
+        case 4:
+          ticker = "AUDUSD=X"
           break
         default:
           ticker = "USDJPY=X"

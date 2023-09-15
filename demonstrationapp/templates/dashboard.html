@@ -179,7 +179,7 @@
           <div class="col-lg-6">
             <div class="card card-chart">
               <div class="card-header">
-                <h5 class="card-category">USD/JPY</h5>
+                <h5 class="card-category" id="month_ticker"></h5>
                 <h4 class="card-title">月足・終値</h4>
                 <div class="dropdown">
                   <button type="button" class="btn btn-round btn-outline-default dropdown-toggle btn-simple btn-icon no-caret" data-toggle="dropdown">
@@ -237,7 +237,7 @@
           <div class="col-lg-6 ">
             <div class="card card-chart">
               <div class="card-header">
-                <h5 class="card-category">USD/JPY</h5>
+                <h5 class="card-category" id="predict_ticker"></h5>
                 <h4 class="card-title">AI予測</h4>
               </div>
               <div class="card-body">
@@ -501,6 +501,28 @@
             localStorage.setItem("ticker", "USDJPY=X")
           }
           const ticker = localStorage.getItem("ticker")
+          var show_ticker = "USD/JPY"
+          switch (ticker) {
+            case "USDJPY=X":
+              show_ticker = "USD/JPY"
+              break
+            case "EURUSD=X":
+              show_ticker = "EUR/USD"
+              break
+            case "EURJPY=X":
+              show_ticker = "EUR/JPY"
+              break
+            case "GBPUSD=X":
+              show_ticker = "GBP/USD"
+              break
+            case "AUDUSD=X":
+              show_ticker = "AUD/USD"
+              break
+            default:
+              show_ticker = "USD/JPY"
+          }
+          document.getElementById("month_ticker").innerText = show_ticker
+          document.getElementById("predict_ticker").innerText = show_ticker
 					const resp = await fetch("../get_chart/", {
 						method: "POST",
 						body: `start=${start_date}&ticker=${ticker}`,
@@ -521,7 +543,7 @@
 					let res_json = JSON.parse(result)
           const blog_result = await blogs.json()
           let blog_json = JSON.parse(blog_result)
-          demo.initDashboardPageCharts(res_json);
+          demo.initDashboardPageCharts(res_json, show_ticker);
           demo.CreateBlogs(blog_json, false)
           demo.PredictionCharts(res_json, ticker);
 				} catch(err){

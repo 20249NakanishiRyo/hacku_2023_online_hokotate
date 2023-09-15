@@ -254,7 +254,7 @@ demo = {
     });
   },
 
-  initDashboardPageCharts: function(array_data) {
+  initDashboardPageCharts: function(array_data, ticker) {
 
     chartColor = "#FFFFFF";
 
@@ -395,7 +395,7 @@ demo = {
       type: 'candlestick',
       data: {
         datasets: [{
-          label: "USD/JPY",
+          label: ticker,
           borderColor: chartColor,
           pointBorderColor: chartColor,
           pointBackgroundColor: "#1e3d60",
