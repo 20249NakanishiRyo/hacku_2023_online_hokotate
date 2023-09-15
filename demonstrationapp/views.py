@@ -184,9 +184,9 @@ def create_input_data(data, look_back):
 
 
 def get_blog(request):
-    columns = ['id', 'title', 'slag', 'intro', 'body', 'posted_date']
+    columns = ['id', 'title', 'intro']
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM demonstrationapp_post;")
+        cursor.execute("SELECT id, title, intro FROM demonstrationapp_post;")
         posts = cursor.fetchall()
     df = pd.DataFrame(posts, columns=columns)
     return JsonResponse(data=df.to_json(orient='records'), safe=False)
