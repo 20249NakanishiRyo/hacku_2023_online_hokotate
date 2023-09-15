@@ -20,6 +20,9 @@ from tensorflow.keras.optimizers import Adam
 class dashboardView(TemplateView):
     template_name = 'dashboard.html'
 
+class userView(TemplateView):
+    template_name = 'user.html'
+
 def get_chart(request):
     load_dotenv()
     api = os.getenv("API_KEY")

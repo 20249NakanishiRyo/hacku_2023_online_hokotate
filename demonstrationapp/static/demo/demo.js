@@ -686,11 +686,11 @@ demo = {
 
     gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
     gradientStroke.addColorStop(0, '#80b6f4');
-    gradientStroke.addColorStop(1, chartColor);
+    gradientStroke.addColorStop(1, '#ffffff');
 
     gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
     gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+    gradientFill.addColorStop(1, "rgba(120, 172, 152, 0.40)");
 
     var labels_day = []
     var data = []
@@ -718,9 +718,9 @@ demo = {
         labels: labels_day,
         datasets: [{
           label: "Close",
-          borderColor: "#f96332",
+          borderColor: "#50a073",
           pointBorderColor: "#FFF",
-          pointBackgroundColor: "#f96332",
+          pointBackgroundColor: "#50a073",
           pointBorderWidth: 2,
           pointHoverRadius: 4,
           pointHoverBorderWidth: 1,
