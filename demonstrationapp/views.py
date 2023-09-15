@@ -13,7 +13,7 @@ from .models import RateModel
 from .models import FutureRate
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Activation, Flatten
+from tensorflow.keras.layers import Dense, Activation
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.optimizers import Adam
 
@@ -96,8 +96,7 @@ def predict_chart(request):
 
         model = Sequential()
         x = model.add(LSTM(12, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
-        model.add(LSTM(8, return_sequences=True))
-        model.add(Flatten())
+        model.add(LSTM(8))
         model.add(Dense(len(data_scale.columns))) #出力層はデータ数に合わせる
 
         model.compile(loss='mean_squared_error', optimizer='adam')
@@ -107,7 +106,7 @@ def predict_chart(request):
         model.evaluate(X_train,y_train,batch_size=1)
         model.evaluate(X_test,y_test,batch_size=1)
 
-        X_future = [data_scale_test[-look_back:].values.tolist()] 
+        X_future = np.array([data_scale_test[-look_back:].values.tolist()])
         y_future_list = []
 
         y_future = model.predict(X_future) 
@@ -156,7 +155,7 @@ def create_input_data(data, look_back):
 
     # 入力データと出力データをnumpy配列に変換し、形状を整える
     X = np.array(X_tmp).reshape(data_size, look_back, len(raw_data))
-    y = np.array(y_tmp).reshape(data_size, 1,  len(raw_data))
+    y = np.array(y_tmp).reshape(data_size, len(raw_data))
 
     return y, X
 
