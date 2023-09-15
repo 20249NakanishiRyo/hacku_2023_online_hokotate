@@ -5,8 +5,8 @@ from datetime import datetime,timedelta
 from pandas_datareader import data
 import pandas as pd
 import numpy as np
+import yfinance as yf
 import tensorflow as tf
-from dotenv import load_dotenv
 import os
 from django.views.generic.base import TemplateView
 from .models import RateModel
@@ -26,22 +26,26 @@ class userView(TemplateView):
     template_name = 'user.html'
 
 def get_chart(request):
-    load_dotenv()
-    api = os.getenv("API_KEY")
-    start = datetime.strptime(request.POST.get("start"), '%Y-%m-%d')
-    end = datetime.today().date()
     columns = ['date', 'open', 'high', 'low', 'close']
+    end = datetime.today()
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) FROM demonstrationapp_ratemodel WHERE date = %s;", [end])
         result = cursor.fetchone()[0]
     if (result > 0):
         pass
     else:
-        df = data.get_data_alphavantage('USDJPY', api_key=api, start=start, end=end)
+        start = datetime.strptime(request.POST.get("start"), '%Y-%m-%d')
+        end = (datetime.today() + timedelta(days=1)).date()
+        yf.pdr_override()
+        df=data.get_data_yahoo('JPY=X',start,end)
         df['date'] = df.index
+        first_open = df[0:1]['Open']
+        first_index = df[0:1].index
+        df['Open'] = df['Close'].shift(1)
+        df.loc[first_index, 'Open'] = first_open
         #追加
         # DBに保存する前に、既存のデータを削除する 
-        #RateModel.objects.all().delete()
+        RateModel.objects.all().delete()
         # チャートのデータをDBに保存する
         for index, row in df.iterrows():
             with connection.cursor() as cursor:
@@ -49,7 +53,7 @@ def get_chart(request):
                 result = cursor.fetchone()[0]
             if (result > 0):
                 continue
-            model = RateModel(date=row['date'], open=row['open'], high=row['high'], low=row['low'], close=row['close'])
+            model = RateModel(date=row['date'], open=row['Open'], high=row['High'], low=row['Low'], close=row['Close'])
             model.save()
     with connection.cursor() as cursor:
         cursor.execute("SELECT date, open, high, low, close FROM demonstrationapp_ratemodel ORDER BY date ASC;")
@@ -64,15 +68,15 @@ def predict_chart(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) FROM demonstrationapp_futurerate WHERE date = %s;", [next_day])
         result = cursor.fetchone()[0]
+        #result = 0
     if (result > 0):
         pass
     else:
-        load_dotenv()
-        api = os.getenv("API_KEY")
         start = datetime.strptime(request.POST.get("start"), '%Y-%m-%d')
-        end = datetime.today().date()
-        df = data.get_data_alphavantage('USDJPY', api_key=api, start=start, end=end)
-        price=df['close']
+        end = (datetime.today() + timedelta(days=1)).date()
+        yf.pdr_override()
+        df=data.get_data_yahoo('JPY=X',start,end)
+        price=df['Close']
         data_technical=df.copy()
         span01=5
         span02=10
@@ -81,7 +85,7 @@ def predict_chart(request):
         data_technical['sma02']=price.rolling(window=span02).mean()
         data_technical['sma03']=price.rolling(window=span03).mean()
         data_technical=data_technical.dropna(how='any')
-        data_technical=data_technical.drop(['open', 'volume', 'high','low',], axis=1)
+        data_technical=data_technical.drop(['Open', 'Volume', 'High','Low', 'Adj Close'], axis=1)
         scaler= MinMaxScaler(feature_range=(0,1))
         data_scale = pd.DataFrame(scaler.fit_transform(data_technical),index=data_technical.index,columns=data_technical.columns)
         data_scale_train = data_scale["2012":"2022"]
@@ -106,11 +110,11 @@ def predict_chart(request):
         # model.add(LSTM(8))
         # model.add(Dense(len(data_scale.columns))) #出力層はデータ数に合わせる
 
-        # model.load_weights('model_weights.h5')
+        #model.load_weights('model_weights.h5')
 
         # model.compile(loss='mean_squared_error', optimizer='adam')
 
-        # history = model.fit(X_train, y_train, epochs=30, batch_size=1)
+        # history = model.fit(X_train, y_train, epochs=50, batch_size=1)
 
         # model.save('model.h5')
         # model.save_weights('model_weights.h5')
@@ -129,7 +133,7 @@ def predict_chart(request):
         df_week_future['date'] = df_week_future.index
         FutureRate.objects.all().delete()
         for index, row in df_week_future.iterrows():
-            future_data = FutureRate(date=row['date'], close=row['close'], sma01=row['sma01'], sma02=row['sma02'], sma03=row['sma03'])
+            future_data = FutureRate(date=row['date'], close=row['Close'], sma01=row['sma01'], sma02=row['sma02'], sma03=row['sma03'])
             future_data.save()
     with connection.cursor() as cursor:
         cursor.execute("SELECT date, close, sma01, sma02, sma03 FROM demonstrationapp_futurerate;")
