@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateView
 from .models import RateModel
 from .models import FutureRate
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Activation
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.optimizers import Adam
@@ -94,14 +94,21 @@ def predict_chart(request):
             look_back=look_back
         )
 
-        model = Sequential()
-        x = model.add(LSTM(12, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
-        model.add(LSTM(8))
-        model.add(Dense(len(data_scale.columns))) #出力層はデータ数に合わせる
+        model = load_model('model.h5')
 
-        model.compile(loss='mean_squared_error', optimizer='adam')
+        # model = Sequential()
+        # x = model.add(LSTM(12, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
+        # model.add(LSTM(8))
+        # model.add(Dense(len(data_scale.columns))) #出力層はデータ数に合わせる
 
-        history = model.fit(X_train, y_train, epochs=50, batch_size=1)
+        # model.load_weights('model_weights.h5')
+
+        # model.compile(loss='mean_squared_error', optimizer='adam')
+
+        # history = model.fit(X_train, y_train, epochs=30, batch_size=1)
+
+        # model.save('model.h5')
+        # model.save_weights('model_weights.h5')
 
         model.evaluate(X_train,y_train,batch_size=1)
         model.evaluate(X_test,y_test,batch_size=1)
