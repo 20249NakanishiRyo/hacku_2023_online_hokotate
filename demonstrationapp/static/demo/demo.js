@@ -632,9 +632,7 @@ demo = {
   },
 
   CreateBlogs: async function(array_data) {
-    console.log(array_data)
     for (var i=0; i < array_data.length; i++){
-      console.log(array_data[i])
       create_blog(array_data[i])
     }
   },
@@ -730,7 +728,15 @@ demo = {
     }
     var lux_date = new Date(res_json[0].date)
     // console.log((lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate()))
-    labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
+    if(lux_date.getDay() === 0){
+      labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + (lux_date.getDate() + 1))
+    }
+    else if(lux_date.getDay() === 6){
+      labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + (lux_date.getDate() + 2))
+    }
+    else{
+      labels_day[labels_day.length] = (lux_date.getFullYear() + "-" + (lux_date.getMonth() + 1) + "-" + lux_date.getDate())
+    }
     data[data.length] = res_json[0].close
     // console.log(labels_day)
 
